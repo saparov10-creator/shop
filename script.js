@@ -1,279 +1,266 @@
-// LocalStorage сактагычтын ачкычы.
-const STORAGE_KEY = "kyrgyz-todo-list-v1";
-const PRIORITY_LABELS = {
-  high: "🔴 Жогорку",
-  medium: "🟡 Орто",
-  low: "🟢 Төмөнкү",
-};
+const products = [
+  {
+    id: 1,
+    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "ROG Zephyrus G14",
+    badge: "RTX 4070",
+    rating: "★★★★★",
+    price: 185000,
+  },
+  {
+    id: 2,
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "MSI Raider GE78",
+    badge: "RTX 4080",
+    rating: "★★★★★",
+    price: 245000,
+  },
+  {
+    id: 3,
+    image: "https://images.unsplash.com/photo-1591799265444-d66432b91588?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "ASUS TUF Gaming A15",
+    badge: "Ryzen 7",
+    rating: "★★★★☆",
+    price: 129000,
+  },
+  {
+    id: 4,
+    image: "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "HyperX Alloy Elite 2",
+    badge: "Механика",
+    rating: "★★★★★",
+    price: 24000,
+  },
+  {
+    id: 5,
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "RTX 4090 Suprim X",
+    badge: "24GB GDDR6X",
+    rating: "★★★★★",
+    price: 320000,
+  },
+  {
+    id: 6,
+    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "Acer Predator Orion",
+    badge: "i9 / 32GB",
+    rating: "★★★★★",
+    price: 310000,
+  },
+  {
+    id: 7,
+    image: "https://images.unsplash.com/photo-1537498425277-c283d32ef9db?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "LG UltraGear 27GP850",
+    badge: "165Hz",
+    rating: "★★★★★",
+    price: 86000,
+  },
+  {
+    id: 8,
+    image: "https://images.unsplash.com/photo-1587202372634-32705e3bf49c?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "NZXT Kraken X63",
+    badge: "RGB Cooling",
+    rating: "★★★★☆",
+    price: 38000,
+  },
+  {
+    id: 9,
+    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "Corsair Vengeance DDR5",
+    badge: "32GB RAM",
+    rating: "★★★★★",
+    price: 52000,
+  },
+  {
+    id: 10,
+    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "Razer BlackWidow V4",
+    badge: "Клавиатура",
+    rating: "★★★★★",
+    price: 28000,
+  },
+  {
+    id: 11,
+    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "Alienware Aurora R15",
+    badge: "RTX 4070 Ti",
+    rating: "★★★★★",
+    price: 299000,
+  },
+  {
+    id: 12,
+    image: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "SteelSeries Arctis Nova",
+    badge: "7.1 Audio",
+    rating: "★★★★☆",
+    price: 32000,
+  },
+  {
+    id: 13,
+    image: "https://images.unsplash.com/photo-1575024357670-2b5164f470c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "Logitech G Pro X",
+    badge: "Кастомная",
+    rating: "★★★★★",
+    price: 26000,
+  },
+  {
+    id: 14,
+    image: "https://images.unsplash.com/photo-1599669454699-248893623440?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "RTX 4070 Ti Super",
+    badge: "16GB GDDR6X",
+    rating: "★★★★★",
+    price: 245000,
+  },
+  {
+    id: 15,
+    image: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "AORUS Xtreme 27",
+    badge: "240Hz",
+    rating: "★★★★★",
+    price: 98000,
+  },
+  {
+    id: 16,
+    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "DeepCool FK120",
+    badge: "ARGB Fans",
+    rating: "★★★★☆",
+    price: 17000,
+  },
+  {
+    id: 17,
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "Kingston Fury SSD 2TB",
+    badge: "PCIe 4.0",
+    rating: "★★★★★",
+    price: 33000,
+  },
+  {
+    id: 18,
+    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "BenQ MOBIUZ EX2710",
+    badge: "144Hz",
+    rating: "★★★★☆",
+    price: 74000,
+  },
+  {
+    id: 19,
+    image: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "Cooler Master H500",
+    badge: "RGB Case",
+    rating: "★★★★★",
+    price: 62000,
+  },
+  {
+    id: 20,
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "Razer DeathAdder V3",
+    badge: "Мышь",
+    rating: "★★★★★",
+    price: 18000,
+  },
+  {
+    id: 21,
+    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "RTX 4060 Ti Build",
+    badge: "Игровая сборка",
+    rating: "★★★★★",
+    price: 210000,
+  },
+  {
+    id: 22,
+    image: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80",
+    title: "NVIDIA Shield Monitor",
+    badge: "4K / 60Hz",
+    rating: "★★★★☆",
+    price: 114000,
+  },
+];
 
-const taskForm = document.getElementById("taskForm");
-const taskInput = document.getElementById("taskInput");
-const prioritySelect = document.getElementById("prioritySelect");
-const taskList = document.getElementById("taskList");
-const greeting = document.getElementById("greeting");
-const progressText = document.getElementById("progressText");
-const progressFill = document.getElementById("progressFill");
-const taskCount = document.getElementById("taskCount");
+const productGrid = document.getElementById("productGrid");
+const cartCount = document.getElementById("cartCount");
+const cartPanel = document.getElementById("cartPanel");
+const cartItems = document.getElementById("cartItems");
+const cartTotal = document.getElementById("cartTotal");
+const closeCart = document.getElementById("closeCart");
+const cartButton = document.querySelector(".cart-btn");
 
-let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-let editingTaskId = null;
+let cart = [];
 
-// Убакытка жараша саламды өзгөртүү.
-function updateGreeting() {
-  const hour = new Date().getHours();
-
-  if (hour < 12) {
-    greeting.textContent = "Кутмандуу таңыңыз менен!";
-  } else if (hour < 18) {
-    greeting.textContent = "Кутмандуу күнүңүз менен!";
-  } else {
-    greeting.textContent = "Кутмандуу кечиңиз менен!";
-  }
+function formatPrice(price) {
+  return `${price.toLocaleString("ru-RU")} сом`;
 }
 
-// Иш тапшырмаларын LocalStorageге сактоо.
-function saveTasks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+function renderProducts() {
+  productGrid.innerHTML = products
+    .map(
+      (product) => `
+        <article class="product-card">
+          <span class="badge">${product.badge}</span>
+          <div class="product-image-wrap">
+            <img src="${product.image}" alt="${product.title}" />
+          </div>
+          <div class="product-info">
+            <h3>${product.title}</h3>
+            <div class="rating">${product.rating}</div>
+            <div class="price-row">
+              <span class="price">${formatPrice(product.price)}</span>
+            </div>
+            <button class="add-btn" data-id="${product.id}" type="button">В корзину</button>
+          </div>
+        </article>
+      `
+    )
+    .join("");
 }
 
-// HTML-ге жазылган текстти қауіпсіз formata келтирүү.
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function getPriorityMeta(priority) {
-  return {
-    label: PRIORITY_LABELS[priority] || PRIORITY_LABELS.medium,
-    className: `priority-${priority}`,
-  };
-}
-
-// Прогресс-барды жана санды жаңыртуу.
-function updateProgress() {
-  const completedTasks = tasks.filter((task) => task.completed).length;
-  const totalTasks = tasks.length;
-  const percentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
-
-  progressFill.style.width = `${percentage}%`;
-  progressText.textContent = `${percentage}%`;
-  taskCount.textContent = `${totalTasks} ${totalTasks === 1 ? "тапшырма" : "тапшырма"}`;
-}
-
-// Тапшырмаларды экранга чыгаруу.
-function renderTasks() {
-  taskList.innerHTML = "";
-
-  if (tasks.length === 0) {
-    const emptyState = document.createElement("li");
-    emptyState.className = "empty-state";
-    emptyState.innerHTML = "Азыр эч кандай план жок. Жаңы тапшырма кошуңуз!";
-    taskList.appendChild(emptyState);
-    updateProgress();
+function renderCart() {
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<p class="cart-empty">Корзина пока пуста.</p>';
+    cartTotal.textContent = "0 сом";
     return;
   }
 
-  tasks.forEach((task) => {
-    const li = document.createElement("li");
-    const isEditing = editingTaskId === task.id;
-    const priorityMeta = getPriorityMeta(task.priority);
-
-    li.className = `task-item ${task.completed ? "completed" : ""} ${isEditing ? "is-editing" : ""}`;
-    li.dataset.id = task.id;
-
-    if (isEditing) {
-      li.innerHTML = `
-        <div class="task-main task-edit-main">
-          <input class="task-edit-input" type="text" maxlength="80" value="${escapeHtml(task.text)}" />
+  cartItems.innerHTML = cart
+    .map(
+      (item) => `
+        <div class="cart-item">
+          <span>${item.title}</span>
+          <strong>${formatPrice(item.price)}</strong>
         </div>
-        <div class="task-meta task-edit-meta">
-          <select class="task-edit-select" aria-label="Маанилүүлүгү">
-            <option value="high" ${task.priority === "high" ? "selected" : ""}>🔴 Жогорку</option>
-            <option value="medium" ${task.priority === "medium" ? "selected" : ""}>🟡 Орто</option>
-            <option value="low" ${task.priority === "low" ? "selected" : ""}>🟢 Төмөнкү</option>
-          </select>
-          <button class="save-btn" type="button" aria-label="Сактоо">💾 Сактоо</button>
-          <button class="delete-btn" type="button" aria-label="Өчүрүү">✕</button>
-        </div>
-      `;
-    } else {
-      li.innerHTML = `
-        <label class="task-main">
-          <input class="task-checkbox" type="checkbox" ${task.completed ? "checked" : ""} />
-          <span class="task-text">${escapeHtml(task.text)}</span>
-        </label>
-        <div class="task-meta">
-          <span class="priority-badge ${priorityMeta.className}">${priorityMeta.label}</span>
-          <button class="edit-btn" type="button" aria-label="Оңдоо">✏️ Оңдоо</button>
-          <button class="delete-btn" type="button" aria-label="Өчүрүү">✕</button>
-        </div>
-      `;
-    }
+      `
+    )
+    .join("");
 
-    li.classList.add("is-adding");
-    setTimeout(() => li.classList.remove("is-adding"), 250);
-    taskList.appendChild(li);
-
-    if (isEditing) {
-      const input = li.querySelector(".task-edit-input");
-      input?.focus();
-      input?.setSelectionRange(input.value.length, input.value.length);
-    }
-  });
-
-  updateProgress();
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  cartTotal.textContent = formatPrice(total);
 }
 
-// Жаңы тапшырма кошуу.
-function addTask(text, priority) {
-  const newTask = {
-    id: Date.now().toString(),
-    text,
-    completed: false,
-    priority,
-    priorityLabel: PRIORITY_LABELS[priority] || PRIORITY_LABELS.medium,
-  };
+function addToCart(id) {
+  const selected = products.find((item) => item.id === Number(id));
+  if (!selected) return;
 
-  tasks.unshift(newTask);
-  saveTasks();
-  renderTasks();
+  cart.push(selected);
+  cartCount.textContent = cart.length;
+  cartCount.classList.remove("pop");
+  void cartCount.offsetWidth;
+  cartCount.classList.add("pop");
+  renderCart();
 }
 
-// Тапшырманы бүтүрүү/ачуу.
-function toggleTask(id, completed) {
-  tasks = tasks.map((task) => (task.id === id ? { ...task, completed } : task));
-  saveTasks();
-  renderTasks();
-}
-
-// Тапшырманы өчүрүү менен сүрөттөмө анимация.
-function deleteTask(id) {
-  const item = taskList.querySelector(`[data-id="${id}"]`);
-
-  if (item) {
-    item.classList.add("is-removing");
-    setTimeout(() => {
-      tasks = tasks.filter((task) => task.id !== id);
-      saveTasks();
-      renderTasks();
-    }, 220);
-    return;
-  }
-
-  tasks = tasks.filter((task) => task.id !== id);
-  saveTasks();
-  renderTasks();
-}
-
-// Тапшырманы оңдоо режимине өткөрүү.
-function startEditing(id) {
-  editingTaskId = id;
-  renderTasks();
-}
-
-// Өңдөлгөн тапшырманы сактоо.
-function saveEditedTask(id) {
-  const item = taskList.querySelector(`[data-id="${id}"]`);
-  const input = item?.querySelector(".task-edit-input");
-  const select = item?.querySelector(".task-edit-select");
-  const updatedText = input?.value.trim();
-  const updatedPriority = select?.value || "medium";
-
-  if (!updatedText) {
-    return;
-  }
-
-  tasks = tasks.map((task) =>
-    task.id === id
-      ? {
-          ...task,
-          text: updatedText,
-          priority: updatedPriority,
-          priorityLabel: PRIORITY_LABELS[updatedPriority] || PRIORITY_LABELS.medium,
-        }
-      : task
-  );
-
-  editingTaskId = null;
-  saveTasks();
-  renderTasks();
-}
-
-// Форма submit өңдөө.
-taskForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  const text = taskInput.value.trim();
-  const priority = prioritySelect.value;
-
-  if (!text) {
-    return;
-  }
-
-  addTask(text, priority);
-  taskForm.reset();
-  prioritySelect.value = "medium";
-  taskInput.focus();
+productGrid.addEventListener("click", (event) => {
+  const button = event.target.closest(".add-btn");
+  if (!button) return;
+  addToCart(button.dataset.id);
 });
 
-// Списоктеги басылган элементтерді өңдөө.
-taskList.addEventListener("click", (event) => {
-  const editButton = event.target.closest(".edit-btn");
-  if (editButton) {
-    const item = editButton.closest(".task-item");
-    if (item) {
-      startEditing(item.dataset.id);
-    }
-    return;
-  }
-
-  const saveButton = event.target.closest(".save-btn");
-  if (saveButton) {
-    const item = saveButton.closest(".task-item");
-    if (item) {
-      saveEditedTask(item.dataset.id);
-    }
-    return;
-  }
-
-  const deleteButton = event.target.closest(".delete-btn");
-  if (deleteButton) {
-    const item = deleteButton.closest(".task-item");
-    if (item) {
-      deleteTask(item.dataset.id);
-    }
-  }
+cartButton.addEventListener("click", () => {
+  cartPanel.classList.add("open");
 });
 
-taskList.addEventListener("keydown", (event) => {
-  if (event.target.matches(".task-edit-input") && event.key === "Enter") {
-    event.preventDefault();
-    const item = event.target.closest(".task-item");
-    if (item) {
-      saveEditedTask(item.dataset.id);
-    }
-  }
-
-  if (event.target.matches(".task-edit-input") && event.key === "Escape") {
-    editingTaskId = null;
-    renderTasks();
-  }
+closeCart.addEventListener("click", () => {
+  cartPanel.classList.remove("open");
 });
 
-taskList.addEventListener("change", (event) => {
-  const checkbox = event.target.closest(".task-checkbox");
-  if (checkbox) {
-    const item = checkbox.closest(".task-item");
-    if (item) {
-      toggleTask(item.dataset.id, checkbox.checked);
-    }
-  }
-});
-
-// Бастапкы инициализация.
-updateGreeting();
-renderTasks();
+renderProducts();
+renderCart();
