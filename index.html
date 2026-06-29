@@ -35,7 +35,10 @@
             <span>⌕</span>
             <input id="search" type="text" placeholder="Поиск товаров..." />
           </label>
-          <button class="icon-btn" type="button" aria-label="Избранное">♡</button>
+          <button class="icon-btn favorite-btn" id="favoritesButton" type="button" aria-label="Избранное">
+            ❤️
+            <span id="favoritesCount" class="cart-count">0</span>
+          </button>
           <button class="icon-btn cart-btn" type="button" aria-label="Корзина">
             🛒
             <span id="cartCount" class="cart-count">0</span>
@@ -106,9 +109,53 @@
           <span>Итого</span>
           <strong id="cartTotal">0 сом</strong>
         </div>
-        <button class="btn btn-primary full-width" type="button">Оформить заказ</button>
+        <button class="btn btn-primary full-width" id="checkoutButton" type="button">Оформить заказ</button>
       </div>
     </aside>
+
+    <aside class="favorites-panel" id="favoritesPanel" aria-label="Избранное">
+      <div class="cart-head">
+        <h3>Избранное</h3>
+        <button class="close-cart" id="closeFavorites" type="button" aria-label="Закрыть избранное">×</button>
+      </div>
+      <div id="favoritesItems" class="favorites-items"></div>
+    </aside>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="modal-backdrop" id="checkoutModal" aria-hidden="true">
+      <div class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+        <div class="checkout-head">
+          <h3 id="checkoutTitle">Оформить заказ</h3>
+          <button class="close-cart" id="closeCheckout" type="button" aria-label="Закрыть оформление">×</button>
+        </div>
+        <p class="checkout-subtitle">Заполните данные, и мы доставим заказ по Кыргызстану.</p>
+        <form id="checkoutForm">
+          <label class="field">
+            <span>ФИО</span>
+            <input type="text" name="fullName" placeholder="Иванов Иван Иванович" required />
+          </label>
+          <label class="field">
+            <span>Телефон</span>
+            <input type="tel" name="phone" placeholder="+996 555 123 456" required pattern="^\+996\s?\d{3}\s?\d{3}\s?\d{3}$" />
+          </label>
+          <label class="field">
+            <span>Адрес доставки</span>
+            <input type="text" name="address" placeholder="г. Бишкек, ул. Ленина 10" required />
+          </label>
+          <label class="field">
+            <span>Способ оплаты</span>
+            <select name="payment" required>
+              <option value="">Выберите...</option>
+              <option value="Наличными при получении">Наличными при получении</option>
+              <option value="Элсом/О!Деньги">Элсом/О!Деньги</option>
+            </select>
+          </label>
+          <button class="btn btn-primary full-width" type="submit">Подтвердить заказ</button>
+        </form>
+        <div id="checkoutSuccess" class="checkout-success">Заказ успешно оформлен! 🎉</div>
+      </div>
+    </div>
 
     <footer class="site-footer" id="about">
       <div class="container footer-grid">

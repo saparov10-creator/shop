@@ -177,6 +177,9 @@ const products = [
   },
 ];
 
+const STORAGE_KEY_FAVORITES = "neogear-favorites";
+const favorites = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY_FAVORITES)) || []);
+
 const productGrid = document.getElementById("productGrid");
 const cartCount = document.getElementById("cartCount");
 const cartPanel = document.getElementById("cartPanel");
@@ -184,6 +187,17 @@ const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const closeCart = document.getElementById("closeCart");
 const cartButton = document.querySelector(".cart-btn");
+const checkoutButton = document.getElementById("checkoutButton");
+const favoritesButton = document.getElementById("favoritesButton");
+const favoritesPanel = document.getElementById("favoritesPanel");
+const closeFavorites = document.getElementById("closeFavorites");
+const favoritesItems = document.getElementById("favoritesItems");
+const favoritesCount = document.getElementById("favoritesCount");
+const overlay = document.getElementById("overlay");
+const checkoutModal = document.getElementById("checkoutModal");
+const closeCheckout = document.getElementById("closeCheckout");
+const checkoutForm = document.getElementById("checkoutForm");
+const checkoutSuccess = document.getElementById("checkoutSuccess");
 
 let cart = [];
 
@@ -191,11 +205,27 @@ function formatPrice(price) {
   return `${price.toLocaleString("ru-RU")} сом`;
 }
 
+function saveFavorites() {
+  localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify([...favorites]));
+}
+
+function updateFavoriteBadge() {
+  const count = favorites.size;
+  favoritesCount.textContent = count;
+  favoritesButton.classList.toggle("active", count > 0);
+}
+
+function getProductById(id) {
+  return products.find((item) => item.id === Number(id));
+}
+
 function renderProducts() {
   productGrid.innerHTML = products
-    .map(
-      (product) => `
+    .map((product) => {
+      const isFavorite = favorites.has(product.id) ? "active" : "";
+      return `
         <article class="product-card">
+          <button class="favorite-toggle ${isFavorite}" data-id="${product.id}" type="button" aria-label="Избранное">❤</button>
           <span class="badge">${product.badge}</span>
           <div class="product-image-wrap">
             <img src="${product.image}" alt="${product.title}" />
@@ -209,8 +239,8 @@ function renderProducts() {
             <button class="add-btn" data-id="${product.id}" type="button">В корзину</button>
           </div>
         </article>
-      `
-    )
+      `;
+    })
     .join("");
 }
 
@@ -218,45 +248,186 @@ function renderCart() {
   if (cart.length === 0) {
     cartItems.innerHTML = '<p class="cart-empty">Корзина пока пуста.</p>';
     cartTotal.textContent = "0 сом";
-    return;
+  } else {
+    cartItems.innerHTML = cart
+      .map(
+        (item) => `
+          <div class="cart-item">
+            <span>${item.title}</span>
+            <strong>${formatPrice(item.price)}</strong>
+          </div>
+        `
+      )
+      .join("");
+
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    cartTotal.textContent = formatPrice(total);
   }
 
-  cartItems.innerHTML = cart
-    .map(
-      (item) => `
-        <div class="cart-item">
-          <span>${item.title}</span>
-          <strong>${formatPrice(item.price)}</strong>
-        </div>
-      `
-    )
-    .join("");
-
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
-  cartTotal.textContent = formatPrice(total);
-}
-
-function addToCart(id) {
-  const selected = products.find((item) => item.id === Number(id));
-  if (!selected) return;
-
-  cart.push(selected);
   cartCount.textContent = cart.length;
   cartCount.classList.remove("pop");
   void cartCount.offsetWidth;
   cartCount.classList.add("pop");
+}
+
+function renderFavorites() {
+  if (favorites.size === 0) {
+    favoritesItems.innerHTML = '<p class="cart-empty">Список избранного пуст.</p>';
+  } else {
+    favoritesItems.innerHTML = [...favorites]
+      .map((id) => {
+        const product = getProductById(id);
+        if (!product) return "";
+        return `
+          <div class="favorite-item">
+            <div>
+              <strong>${product.title}</strong>
+              <div>${formatPrice(product.price)}</div>
+            </div>
+            <div class="favorite-actions">
+              <button class="favorite-add" data-id="${product.id}" type="button">В корзину</button>
+              <button class="favorite-remove" data-id="${product.id}" type="button">Удалить</button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  }
+  updateFavoriteBadge();
+}
+
+function addToCart(id) {
+  const selected = getProductById(id);
+  if (!selected) return;
+  cart.push(selected);
   renderCart();
 }
 
+function toggleFavorite(id) {
+  const productId = Number(id);
+  if (favorites.has(productId)) {
+    favorites.delete(productId);
+  } else {
+    favorites.add(productId);
+  }
+  saveFavorites();
+  renderProducts();
+  renderFavorites();
+}
+
+function openFavoritesPanel() {
+  favoritesPanel.classList.add("open");
+  overlay.classList.add("show");
+  document.body.classList.add("modal-open");
+}
+
+function closeFavoritesPanel() {
+  favoritesPanel.classList.remove("open");
+  if (!checkoutModal.classList.contains("show") && !cartPanel.classList.contains("open")) {
+    overlay.classList.remove("show");
+    document.body.classList.remove("modal-open");
+  }
+}
+
+function openCheckoutModal() {
+  checkoutModal.classList.add("show");
+  overlay.classList.add("show");
+  document.body.classList.add("modal-open");
+  checkoutForm.reset();
+  checkoutSuccess.classList.remove("show");
+}
+
+function closeCheckoutModal() {
+  checkoutModal.classList.remove("show");
+  checkoutSuccess.classList.remove("show");
+  if (!favoritesPanel.classList.contains("open") && !cartPanel.classList.contains("open")) {
+    overlay.classList.remove("show");
+    document.body.classList.remove("modal-open");
+  }
+}
+
 productGrid.addEventListener("click", (event) => {
-  const button = event.target.closest(".add-btn");
-  if (!button) return;
-  addToCart(button.dataset.id);
+  const favoriteButton = event.target.closest(".favorite-toggle");
+  if (favoriteButton) {
+    toggleFavorite(favoriteButton.dataset.id);
+    return;
+  }
+
+  const addButton = event.target.closest(".add-btn");
+  if (!addButton) return;
+  addToCart(addButton.dataset.id);
+});
+
+favoritesButton.addEventListener("click", openFavoritesPanel);
+closeFavorites.addEventListener("click", closeFavoritesPanel);
+
+favoritesItems.addEventListener("click", (event) => {
+  const addButton = event.target.closest(".favorite-add");
+  if (addButton) {
+    addToCart(addButton.dataset.id);
+    return;
+  }
+
+  const removeButton = event.target.closest(".favorite-remove");
+  if (removeButton) {
+    toggleFavorite(removeButton.dataset.id);
+  }
 });
 
 cartButton.addEventListener("click", () => {
   cartPanel.classList.add("open");
+  overlay.classList.add("show");
+  document.body.classList.add("modal-open");
 });
+
+closeCart.addEventListener("click", () => {
+  cartPanel.classList.remove("open");
+  if (!favoritesPanel.classList.contains("open") && !checkoutModal.classList.contains("show")) {
+    overlay.classList.remove("show");
+    document.body.classList.remove("modal-open");
+  }
+});
+
+checkoutButton.addEventListener("click", () => {
+  cartPanel.classList.remove("open");
+  openCheckoutModal();
+});
+
+closeCheckout.addEventListener("click", closeCheckoutModal);
+
+overlay.addEventListener("click", () => {
+  if (favoritesPanel.classList.contains("open")) {
+    closeFavoritesPanel();
+  } else if (checkoutModal.classList.contains("show")) {
+    closeCheckoutModal();
+  } else if (cartPanel.classList.contains("open")) {
+    cartPanel.classList.remove("open");
+    overlay.classList.remove("show");
+    document.body.classList.remove("modal-open");
+  }
+});
+
+checkoutForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (!checkoutForm.checkValidity()) {
+    checkoutForm.reportValidity();
+    return;
+  }
+
+  checkoutSuccess.classList.add("show");
+  checkoutForm.reset();
+
+  setTimeout(() => {
+    cart = [];
+    renderCart();
+    closeCheckoutModal();
+  }, 1600);
+});
+
+renderProducts();
+renderCart();
+renderFavorites();
 
 closeCart.addEventListener("click", () => {
   cartPanel.classList.remove("open");
